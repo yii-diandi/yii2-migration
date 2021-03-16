@@ -99,6 +99,7 @@ class ConsoleController extends MigrateController
                 die();
             }
         }
+		
         /* 创建migration */
         foreach ($tables as $table) {
             //$migrate = new MigrateCreate();
