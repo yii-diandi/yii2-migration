@@ -3,7 +3,7 @@
  * @Author: Wang chunsheng  email:2192138785@qq.com
  * @Date:   2020-06-23 16:45:55
  * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
- * @Last Modified time: 2020-06-24 12:57:42
+ * @Last Modified time: 2021-03-16 11:40:39
  */
  
 
@@ -104,7 +104,7 @@ class ConsoleController extends MigrateController
             //$migrate = new MigrateCreate();
             $migrate = Yii::createObject([
                 'class' => 'diandi\migration\components\MigrateCreate',
-                'migrationPath' => "@common/addons/{$addonsName}/migrations/"
+                'migrationPath' => "@addons/{$addonsName}/migrations/"
             ]);
             $migrate->create($table);
             unset($migrate);
