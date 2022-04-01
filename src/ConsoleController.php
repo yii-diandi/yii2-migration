@@ -33,7 +33,6 @@ class ConsoleController extends MigrateController
         $alltables = Yii::$app->db->createCommand('SHOW TABLE STATUS')->queryAll();
         $alltables = array_map('array_change_key_case', $alltables);
         $alltables = ArrayHelper::getColumn($alltables, 'name');
-
         $name = trim($name, ',');
         if ($name == 'all') {
             /* 备份所有数据 */
