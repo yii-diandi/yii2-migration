@@ -3,19 +3,17 @@
  * @Author: Wang chunsheng  email:2192138785@qq.com
  * @Date:   2020-06-23 16:45:55
  * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
- * @Last Modified time: 2020-06-24 12:57:42
+ * @Last Modified time: 2022-04-01 15:11:03
  */
- 
 
 namespace diandi\migration;
 
 use Yii;
-use yii\console\Exception;
-use yii\helpers\Console;
-use yii\helpers\ArrayHelper;
 use yii\console\controllers\MigrateController;
+use yii\console\Exception;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
 
-//use jianyan\migration\components\MigrateCreate;
 
 /**
  * This is just an example.
@@ -23,22 +21,24 @@ use yii\console\controllers\MigrateController;
 class ConsoleController extends MigrateController
 {
     /**
-     * Creates a new migration. php yii migrate/backup all
-     * 
-     * @param string $name 
-     * @throws Exception if the name argument is invalid.
+     * Creates a new migration. php yii migrate/backup all.
+     *
+     * @param string $name
+     *
+     * @throws Exception if the name argument is invalid
      */
-    public function actionBackup($name){
+    public function actionBackup($name, $version)
+    {
         /* 所有数据表 */
-        $alltables  = Yii::$app->db->createCommand('SHOW TABLE STATUS')->queryAll();
-        $alltables  = array_map('array_change_key_case', $alltables);
-        $alltables  = ArrayHelper::getColumn($alltables, 'name');
+        $alltables = Yii::$app->db->createCommand('SHOW TABLE STATUS')->queryAll();
+        $alltables = array_map('array_change_key_case', $alltables);
+        $alltables = ArrayHelper::getColumn($alltables, 'name');
 
-        $name = trim($name,',');
+        $name = trim($name, ',');
         if ($name == 'all') {
             /* 备份所有数据 */
-            $tables  = $alltables;
-        } else if(strpos($name, ',')){
+            $tables = $alltables;
+        } elseif (strpos($name, ',')) {
             /* 备份部分数据表 */
             $tables = explode(',', $name);
         } else {
@@ -47,7 +47,7 @@ class ConsoleController extends MigrateController
         }
         /* 检查表是否存在 */
         foreach ($tables as $table) {
-            if (!in_array($table,$alltables)) {
+            if (!in_array($table, $alltables)) {
                 $this->stdout($table." table no find ...\n", Console::FG_RED);
                 die();
             }
@@ -57,7 +57,7 @@ class ConsoleController extends MigrateController
             //$migrate = new MigrateCreate();
             $migrate = Yii::createObject([
                 'class' => 'diandi\migration\components\MigrateCreate',
-                'migrationPath' => '@app/migrations'
+                'migrationPath' => Yii::getAlias('@console/migrations/'.$version),
             ]);
             $migrate->create($table);
             unset($migrate);
@@ -67,21 +67,21 @@ class ConsoleController extends MigrateController
     }
 
     /**
-     * Creates a new migration. php yii migrate/backup all
-     * 
-     * @param string $name 
-     * @throws Exception if the name argument is invalid.
+     * Creates a new migration. php yii migrate/backup all.
+     *
+     * @throws Exception if the name argument is invalid
      */
-    public function actionAddonsBackup($addonsName){
+    public function actionAddonsBackup($addonsName, $version)
+    {
         /* 所有数据表 */
-        $alltables  = Yii::$app->db->createCommand("SHOW TABLE STATUS like '%{$addonsName}%'")->queryAll();
-        $alltables  = array_map('array_change_key_case', $alltables);
-        $alltables  = ArrayHelper::getColumn($alltables, 'name');
+        $alltables = Yii::$app->db->createCommand("SHOW TABLE STATUS like '%{$addonsName}%'")->queryAll();
+        $alltables = array_map('array_change_key_case', $alltables);
+        $alltables = ArrayHelper::getColumn($alltables, 'name');
 
-          /* 备份所有数据 */
-        $tables  = $alltables;
-              
-        $name = trim($addonsName,',');
+        /* 备份所有数据 */
+        $tables = $alltables;
+
+        $name = trim($addonsName, ',');
         // if ($name == 'all') {
         //     /* 备份所有数据 */
         //     $tables  = $alltables;
@@ -94,17 +94,18 @@ class ConsoleController extends MigrateController
         // }
         /* 检查表是否存在 */
         foreach ($tables as $table) {
-            if (!in_array($table,$alltables)) {
+            if (!in_array($table, $alltables)) {
                 $this->stdout($table." table no find ...\n", Console::FG_RED);
                 die();
             }
         }
+
         /* 创建migration */
         foreach ($tables as $table) {
             //$migrate = new MigrateCreate();
             $migrate = Yii::createObject([
                 'class' => 'diandi\migration\components\MigrateCreate',
-                'migrationPath' => "@common/addons/{$addonsName}/migrations/"
+                'migrationPath' => "@addons/{$addonsName}/migrations/{$version}",
             ]);
             $migrate->create($table);
             unset($migrate);
